@@ -34,7 +34,7 @@ Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod de
   - **Pawn_HealthTracker_MakeUndowned.cs**: Prefix patch handles events when pawns regain consciousness.
   - **ReverseDesignatorDatabase_InitDesignators.cs**: Postfix patch adds the capture designator tool to the game's UI.
 
-## Suggestions for Copilot
+## Suggestions for Agents
 - **Pattern Recognition**: Automatically extend method stubs for existing class patterns, particularly in Designator and HarmonyPatch classes.
 - **Consistent Code Formatting**: Suggest consistent formatting styles for XML files to maintain readability.
 - **Efficient Patch Writing**: Assist in writing efficient Harmony patches by suggesting common patterns for prefix and postfix usage.
@@ -42,17 +42,17 @@ Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod de
 - **Localization Support**: Provide boilerplate for additional language support by referencing existing translation methods.
 - **Error Logging Enhancements**: Propose enhanced error-logging features for better debugging and user support.
 
-By adhering to these guidelines and leveraging the capabilities of GitHub Copilot, contributors can effectively maintain and enhance the Capture Them (Continued) mod to provide a seamless experience for RimWorld players.
+By adhering to these guidelines and leveraging the capabilities of Agents, contributors can effectively maintain and enhance the Capture Them (Continued) mod to provide a seamless experience for RimWorld players.
 
 This instruction file provides detailed guidance to developers and contributors working on the Capture Them (Continued) mod, ensuring consistent development and effective use of tooling.
 
 ## Project Solution Guidelines
 - Relevant mod XML files are included as Solution Items under the solution folder named XML, these can be read and modified from within the solution.
 - Use these in-solution XML files as the primary files for reference and modification.
-- The `.github/copilot-instructions.md` file is included in the solution under the `.github` solution folder, so it should be read/modified from within the solution instead of using paths outside the solution. Update this file once only, as it and the parent-path solution reference point to the same file in this workspace.
+- The `.agents/memories/features.md` file is included in the solution under the `.github` solution folder, so it should be read/modified from within the solution instead of using paths outside the solution. Update this file once only, as it and the parent-path solution reference point to the same file in this workspace.
 - When making functional changes in this mod, ensure the documented features stay in sync with implementation; use the in-solution `.github` copy as the primary file.
 - In the solution is also a project called Assembly-CSharp, containing a read-only version of the decompiled game source, for reference and debugging purposes.
-- For any new documentation, update this copilot-instructions.md file rather than creating separate documentation files.
+- For any new documentation, update this features.md file rather than creating separate documentation files.
 
 
 ## Hard rules (must follow)

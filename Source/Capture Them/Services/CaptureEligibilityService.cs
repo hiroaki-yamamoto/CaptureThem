@@ -36,7 +36,7 @@ public class CaptureEligibilityService : ICaptureEligibilityService
         }
 
         var firstPawn = loc.GetFirstPawn(map);
-        if (firstPawn == null || !firstPawn.RaceProps.Humanlike)
+        if (firstPawn == null || firstPawn.RaceProps?.Humanlike != true || firstPawn.IsShambler)
         {
             return "MessageMustDesignateDownedForeignPawn".Translate();
         }
@@ -63,22 +63,25 @@ public class CaptureEligibilityService : ICaptureEligibilityService
             return false;
         }
 
-        return thing is Pawn { Downed: true } pawn &&
+        return thing is Pawn pawn &&
+               pawn.health != null &&
+               pawn.Downed &&
                pawn.Faction != Faction.OfPlayer &&
                !pawn.InBed() &&
                !pawn.IsPrisonerOfColony &&
-               pawn.RaceProps.Humanlike;
+               pawn.RaceProps?.Humanlike == true &&
+               !pawn.IsShambler;
     }
 
     /// <inheritdoc />
     public bool IsEligibleForCaptureWork(Pawn capturer, Thing target, bool forced)
     {
-        if (capturer == null || target is not Pawn { Downed: true } pawn)
+        if (capturer == null || target is not Pawn pawn || pawn.health == null || !pawn.Downed)
         {
             return false;
         }
 
-        if (pawn.Faction == capturer.Faction)
+        if (pawn.Faction == capturer.Faction || pawn.IsShambler)
         {
             return false;
         }

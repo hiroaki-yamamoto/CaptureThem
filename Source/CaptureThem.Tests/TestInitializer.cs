@@ -51,5 +51,26 @@ public class TestInitializer
 
             return null;
         };
+
+        // Do not reference any Verse/RimWorld types directly in this method
+        // so the JIT doesn't eagerly resolve Assembly-CSharp before the hook is registered.
+        InitializeRimWorldEnvironment();
+    }
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private static void InitializeRimWorldEnvironment()
+    {
+        try
+        {
+            var customSaveDataPathField = typeof(Verse.GenFilePaths).GetField("saveDataPath", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            if (customSaveDataPathField != null)
+            {
+                customSaveDataPathField.SetValue(null, Path.GetTempPath());
+            }
+        }
+        catch
+        {
+            // Ignore if path setup fails
+        }
     }
 }

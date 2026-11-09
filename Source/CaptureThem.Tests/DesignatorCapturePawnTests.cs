@@ -44,4 +44,21 @@ public class DesignatorCapturePawnTests
         mockNotificationService.Verify(n => n.WarnIfCapturingWillAngerFaction(It.IsAny<Pawn>()), Times.Never);
         mockDesignationService.Verify(d => d.Designate(thing, It.IsAny<Map>()), Times.Once);
     }
+
+    [TestMethod]
+    public void CanDesignateThing_DelegatesToEligibilityService()
+    {
+        var designator = new Designator_CapturePawn(
+            mockDesignationService.Object,
+            mockEligibilityService.Object,
+            mockNotificationService.Object);
+
+        var thing = new Thing();
+        mockEligibilityService.Setup(e => e.CanDesignateThing(thing, It.IsAny<Map>())).Returns(false);
+
+        var report = designator.CanDesignateThing(thing);
+
+        Assert.IsFalse(report.Accepted);
+        mockEligibilityService.Verify(e => e.CanDesignateThing(thing, It.IsAny<Map>()), Times.Once);
+    }
 }

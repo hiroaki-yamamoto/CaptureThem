@@ -75,7 +75,7 @@ public class Designator_CapturePawn : Designator
         var thingList = c.GetThingList(Map);
         for (var i = 0; i < thingList.Count; i++)
         {
-            if (thingList[i] is Pawn pawn)
+            if (thingList[i] is Pawn pawn && CanDesignateThing(pawn).Accepted)
             {
                 DesignateThing(pawn);
             }

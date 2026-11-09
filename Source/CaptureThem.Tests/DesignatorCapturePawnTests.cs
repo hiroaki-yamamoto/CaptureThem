@@ -1,0 +1,47 @@
+using System;
+using CaptureThem.Interfaces;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Verse;
+
+namespace CaptureThem.Tests;
+
+/// <summary>
+/// Unit tests for <see cref="Designator_CapturePawn"/>.
+/// Validates constructor argument assertions and delegation behavior.
+/// </summary>
+[TestClass]
+public class DesignatorCapturePawnTests
+{
+    private readonly Mock<ICaptureDesignationService> mockDesignationService = new();
+    private readonly Mock<ICaptureEligibilityService> mockEligibilityService = new();
+    private readonly Mock<ICaptureNotificationService> mockNotificationService = new();
+
+    [TestMethod]
+    public void Constructor_ThrowsArgumentNullException_WhenAnyDependencyIsNull()
+    {
+        Assert.ThrowsException<ArgumentNullException>(() => new Designator_CapturePawn(
+            null!, mockEligibilityService.Object, mockNotificationService.Object));
+
+        Assert.ThrowsException<ArgumentNullException>(() => new Designator_CapturePawn(
+            mockDesignationService.Object, null!, mockNotificationService.Object));
+
+        Assert.ThrowsException<ArgumentNullException>(() => new Designator_CapturePawn(
+            mockDesignationService.Object, mockEligibilityService.Object, null!));
+    }
+
+    [TestMethod]
+    public void DesignateThing_DelegatesToDesignationService_AndDoesNotWarnForNonPawns()
+    {
+        var designator = new Designator_CapturePawn(
+            mockDesignationService.Object,
+            mockEligibilityService.Object,
+            mockNotificationService.Object);
+
+        var thing = new Thing();
+        designator.DesignateThing(thing);
+
+        mockNotificationService.Verify(n => n.WarnIfCapturingWillAngerFaction(It.IsAny<Pawn>()), Times.Never);
+        mockDesignationService.Verify(d => d.Designate(thing, It.IsAny<Map>()), Times.Once);
+    }
+}

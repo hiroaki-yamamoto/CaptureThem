@@ -4,6 +4,10 @@ using Verse;
 
 namespace CaptureThem;
 
+/// <summary>
+/// Static initialization handler executing on RimWorld startup.
+/// Applies Harmony patches defined within the assembly.
+/// </summary>
 [StaticConstructorOnStartup]
 public static class StartUp
 {

@@ -6,7 +6,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <DebugType>None</DebugType>
     <LangVersion>latest</LangVersion>
-  <FileVersion>1.7.0</FileVersion><GenerateDependencyFile>false</GenerateDependencyFile><AssemblyVersion>1.7</AssemblyVersion><Product>Capture Them (Continued)</Product><Copyright>© busted_bunny 2026 - MIT License</Copyright><Nullable>warnings</Nullable></PropertyGroup>
+  <FileVersion>1.7.0</FileVersion><GenerateDependencyFile>false</GenerateDependencyFile><AssemblyVersion>1.7</AssemblyVersion><Product>Capture Them (Continued)</Product><Copyright>© busted_bunny 2026 - MIT License</Copyright><Nullable>enable</Nullable></PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
       <Version>1.7.4985-unstable</Version>

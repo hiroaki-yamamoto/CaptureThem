@@ -3,6 +3,7 @@
     <BuildType Name="Release" />
   </Configurations>
   <Project Path="Capture Them/CaptureThem.csproj" />
+  <Project Path="CaptureThem.Tests/CaptureThem.Tests.csproj" />
   <Folder Name="/.github/">
     <File Path="../.github/copilot-instructions.md" />
   </Folder>

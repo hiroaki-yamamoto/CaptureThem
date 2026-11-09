@@ -21,6 +21,13 @@ Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod de
 - Adopts standard C# coding practices, using clear class and method naming conventions for easier readability and maintenance.
 - All method names follow PascalCase, while variable names follow camelCase conventions.
 - Proper use of access modifiers to encapsulate implementation details and expose necessary functionalities.
+- Adheres strictly to **SOLID principles**:
+  - **Single Responsibility Principle (SRP):** Split large responsibilities (designation management, target eligibility, threat assessment, bed allocation, notification, and job creation) into dedicated service interfaces (`ICaptureDesignationService`, `ICaptureEligibilityService`, `IThreatAssessmentService`, `IPrisonerBedAssignmentService`, `ICaptureNotificationService`, `ICaptureJobFactory`).
+  - **Open/Closed Principle (OCP):** Eligibility rules and threat assessments can be extended or modified via service implementations without modifying core UI or AI classes.
+  - **Liskov Substitution Principle (LSP):** `Designator_CapturePawn` and `WorkGiver_CapturePrisoners` faithfully respect the contracts of base RimWorld classes (`Designator` and `WorkGiver_RescueDowned`).
+  - **Interface Segregation Principle (ISP):** Clients depend only on the specific interfaces they require rather than a monolithic manager.
+  - **Dependency Inversion Principle (DIP):** UI tools, WorkGivers, and Harmony patches depend on abstractions (`Interfaces/`), resolved through `CaptureThemServices` service locator which enables dependency injection and unit testing.
+- **Unit Testing:** Comprehensive test suite in `Source/CaptureThem.Tests` covering services, mock interactions, and boundary cases.
 
 ## XML Integration
 - **DesignationCategories.xml**: Defines the categories under which new designations appear.

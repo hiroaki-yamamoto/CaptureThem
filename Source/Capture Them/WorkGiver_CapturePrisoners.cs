@@ -1,84 +1,113 @@
+using System;
 using System.Collections.Generic;
+using CaptureThem.Interfaces;
+using CaptureThem.Services;
 using RimWorld;
 using Verse;
 using Verse.AI;
 
 namespace CaptureThem;
 
+/// <summary>
+/// WorkGiver responsible for scanning, filtering, and assigning capture jobs to eligible colonists.
+/// Follows SOLID principles by orchestrating specialized services for eligibility, threat assessment, bed assignment, and job creation.
+/// </summary>
 public class WorkGiver_CapturePrisoners : WorkGiver_RescueDowned
 {
-    private static JobDef Job => JobDefOf.Capture;
+    private const float ThreatDetectionRadius = 40f;
 
-    private static DesignationDef Designation => CaptureThemDefOf.CaptureThemCapture;
+    private readonly ICaptureDesignationService designationService;
+    private readonly ICaptureEligibilityService eligibilityService;
+    private readonly IThreatAssessmentService threatAssessmentService;
+    private readonly IPrisonerBedAssignmentService bedAssignmentService;
+    private readonly ICaptureNotificationService notificationService;
+    private readonly ICaptureJobFactory jobFactory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WorkGiver_CapturePrisoners"/> class using global default services.
+    /// Required for RimWorld reflection instantiation via XML defs.
+    /// </summary>
+    public WorkGiver_CapturePrisoners()
+        : this(
+            CaptureThemServices.DesignationService,
+            CaptureThemServices.EligibilityService,
+            CaptureThemServices.ThreatAssessmentService,
+            CaptureThemServices.BedAssignmentService,
+            CaptureThemServices.NotificationService,
+            CaptureThemServices.JobFactory)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WorkGiver_CapturePrisoners"/> class with custom services (useful for dependency injection and testing).
+    /// </summary>
+    /// <param name="designationService">The designation service.</param>
+    /// <param name="eligibilityService">The eligibility service.</param>
+    /// <param name="threatAssessmentService">The threat assessment service.</param>
+    /// <param name="bedAssignmentService">The bed assignment service.</param>
+    /// <param name="notificationService">The notification service.</param>
+    /// <param name="jobFactory">The job factory.</param>
+    public WorkGiver_CapturePrisoners(
+        ICaptureDesignationService designationService,
+        ICaptureEligibilityService eligibilityService,
+        IThreatAssessmentService threatAssessmentService,
+        IPrisonerBedAssignmentService bedAssignmentService,
+        ICaptureNotificationService notificationService,
+        ICaptureJobFactory jobFactory)
+    {
+        this.designationService = designationService ?? throw new ArgumentNullException(nameof(designationService));
+        this.eligibilityService = eligibilityService ?? throw new ArgumentNullException(nameof(eligibilityService));
+        this.threatAssessmentService = threatAssessmentService ?? throw new ArgumentNullException(nameof(threatAssessmentService));
+        this.bedAssignmentService = bedAssignmentService ?? throw new ArgumentNullException(nameof(bedAssignmentService));
+        this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+        this.jobFactory = jobFactory ?? throw new ArgumentNullException(nameof(jobFactory));
+    }
+
+    /// <inheritdoc />
     public override bool ShouldSkip(Pawn pawn, bool forced = false)
     {
-        return !pawn.Map.designationManager.AnySpawnedDesignationOfDef(Designation);
+        return !designationService.AnySpawnedDesignation(pawn.Map);
     }
 
+    /// <inheritdoc />
     public override IEnumerable<Thing> PotentialWorkThingsGlobal(Pawn pawn)
     {
-        foreach (var designation in pawn.Map.designationManager.SpawnedDesignationsOfDef(Designation))
-        {
-            yield return designation.target.Thing;
-        }
+        return designationService.GetDesignatedThings(pawn.Map);
     }
 
+    /// <inheritdoc />
     public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
     {
-        if (t is not Pawn { Downed: true } pawn2 || pawn2.Faction == pawn.Faction ||
-            t.Map.designationManager.DesignationOn(t, Designation) == null)
+        if (!eligibilityService.IsEligibleForCaptureWork(pawn, t, forced))
         {
             return false;
         }
 
-        if (pawn2.InBed() || !pawn.CanReserve(pawn2, 1, -1, null, forced) || dangerIsNear(pawn, pawn2, 40f))
+        var victim = (Pawn)t;
+        if (threatAssessmentService.IsDangerNear(pawn, victim, ThreatDetectionRadius))
         {
             return false;
         }
 
-        var buildingBed = RestUtility.FindBedFor(pawn2, pawn, false, false, GuestStatus.Prisoner) ??
-                          RestUtility.FindBedFor(pawn2, pawn, false, true, GuestStatus.Prisoner);
-
-        if (buildingBed != null)
+        var bed = bedAssignmentService.FindBedFor(victim, pawn, allowFallback: true);
+        if (bed != null)
         {
-            return pawn.CanReserve(buildingBed, 1, -1, null, forced);
+            return bedAssignmentService.CanReserveBed(pawn, bed, forced);
         }
 
-        Messages.Message("CannotCapture".Translate() + ": " + "NoPrisonerBed".Translate(), pawn2,
-            MessageTypeDefOf.RejectInput, false);
+        notificationService.NotifyNoPrisonerBedAvailable(victim);
         return false;
     }
 
-    public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
+    /// <inheritdoc />
+    public override Job? JobOnThing(Pawn pawn, Thing t, bool forced = false)
     {
-        var pawn2 = t as Pawn;
-        var t2 = RestUtility.FindBedFor(pawn2, pawn, false, false, GuestStatus.Prisoner);
-        var job = JobMaker.MakeJob(Job, pawn2, t2);
-        job.count = 1;
-        PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.Capturing, KnowledgeAmount.Total);
-        return job;
-    }
-
-    private static bool dangerIsNear(Pawn pawn, Pawn p, float radius)
-    {
-        if (!p.Spawned)
+        if (t is not Pawn victim)
         {
-            return false;
+            return null;
         }
 
-        var fogged = p.Position.Fogged(p.Map);
-        var potentialTargetsFor = p.Map.attackTargetsCache.GetPotentialTargetsFor(pawn);
-        foreach (var attackTarget in potentialTargetsFor)
-        {
-            if (!attackTarget.ThreatDisabled(pawn) &&
-                (fogged || !attackTarget.Thing.Position.Fogged(attackTarget.Thing.Map)) &&
-                p.Position.InHorDistOf(((Thing)attackTarget).Position, radius))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        var destinationBed = bedAssignmentService.FindBedFor(victim, pawn, allowFallback: false);
+        return jobFactory.CreateCaptureJob(pawn, victim, destinationBed!);
     }
 }

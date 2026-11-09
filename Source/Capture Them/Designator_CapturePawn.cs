@@ -1,13 +1,48 @@
+using System;
+using CaptureThem.Interfaces;
+using CaptureThem.Services;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
 namespace CaptureThem;
 
+/// <summary>
+/// Designator tool that allows players to mark downed foreign pawns for capture.
+/// Adheres to SOLID principles by delegating validation, notifications, and designation operations to dedicated services.
+/// </summary>
 public class Designator_CapturePawn : Designator
 {
+    private readonly ICaptureDesignationService designationService;
+    private readonly ICaptureEligibilityService eligibilityService;
+    private readonly ICaptureNotificationService notificationService;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Designator_CapturePawn"/> class using global default services.
+    /// </summary>
     public Designator_CapturePawn()
+        : this(
+            CaptureThemServices.DesignationService,
+            CaptureThemServices.EligibilityService,
+            CaptureThemServices.NotificationService)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Designator_CapturePawn"/> class with custom services (useful for dependency injection and testing).
+    /// </summary>
+    /// <param name="designationService">The designation management service.</param>
+    /// <param name="eligibilityService">The eligibility evaluation service.</param>
+    /// <param name="notificationService">The notification and messaging service.</param>
+    public Designator_CapturePawn(
+        ICaptureDesignationService designationService,
+        ICaptureEligibilityService eligibilityService,
+        ICaptureNotificationService notificationService)
+    {
+        this.designationService = designationService ?? throw new ArgumentNullException(nameof(designationService));
+        this.eligibilityService = eligibilityService ?? throw new ArgumentNullException(nameof(eligibilityService));
+        this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+
         defaultLabel = "DesignatorCapturePawn".Translate();
         defaultDesc = "DesignatorCapturePawnDesc".Translate();
         icon = ContentFinder<Texture2D>.Get("CapturePawnGizmo");
@@ -16,66 +51,45 @@ public class Designator_CapturePawn : Designator
         hotKey = KeyBindingDefOf.Misc1;
     }
 
-    protected override DesignationDef Designation => CaptureThemDefOf.CaptureThemCapture;
+    /// <inheritdoc />
+    protected override DesignationDef Designation => designationService.DesignationDef;
 
+    /// <inheritdoc />
     public override DrawStyleCategoryDef DrawStyleCategory => DrawStyleCategoryDefOf.Orders;
 
+    /// <inheritdoc />
     public override AcceptanceReport CanDesignateCell(IntVec3 loc)
     {
-        if (!loc.InBounds(Map) || loc.Fogged(Map))
-        {
-            return false;
-        }
-
-        var firstPawn = loc.GetFirstPawn(Map);
-        if (firstPawn == null || !firstPawn.RaceProps.Humanlike)
-        {
-            return "MessageMustDesignateDownedForeignPawn".Translate();
-        }
-
-        var result = CanDesignateThing(firstPawn);
-        if (!result.Accepted)
-        {
-            return result;
-        }
-
-        return true;
+        return eligibilityService.CanDesignateCell(loc, Map);
     }
 
+    /// <inheritdoc />
     public override AcceptanceReport CanDesignateThing(Thing t)
     {
-        if (Map.designationManager.DesignationOn(t, Designation) != null)
-        {
-            return false;
-        }
-
-        return t is Pawn { Downed: true } pawn && pawn.Faction != Faction.OfPlayer && !pawn.InBed() &&
-               !pawn.IsPrisonerOfColony && pawn.RaceProps.Humanlike;
+        return eligibilityService.CanDesignateThing(t, Map);
     }
 
+    /// <inheritdoc />
     public override void DesignateSingleCell(IntVec3 c)
     {
         var thingList = c.GetThingList(Map);
-        foreach (var thing in thingList)
+        for (var i = 0; i < thingList.Count; i++)
         {
-            if (thing is Pawn pawn)
+            if (thingList[i] is Pawn pawn)
             {
                 DesignateThing(pawn);
             }
         }
     }
 
+    /// <inheritdoc />
     public override void DesignateThing(Thing t)
     {
-        var pawn = t as Pawn;
-        if (pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.Faction.Hidden &&
-            !pawn.Faction.HostileTo(Faction.OfPlayer) && !pawn.IsPrisonerOfColony && pawn.RaceProps.Humanlike)
+        if (t is Pawn pawn)
         {
-            Messages.Message("MessageCapturingWillAngerFaction".Translate(pawn.Named("PAWN")).AdjustedFor(pawn), pawn,
-                MessageTypeDefOf.CautionInput, false);
+            notificationService.WarnIfCapturingWillAngerFaction(pawn);
         }
 
-        Map.designationManager.RemoveAllDesignationsOn(t);
-        Map.designationManager.AddDesignation(new Designation(t, Designation));
+        designationService.Designate(t, Map);
     }
 }

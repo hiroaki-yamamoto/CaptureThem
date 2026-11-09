@@ -1,4 +1,10 @@
-# GitHub Copilot Instructions for Capture Them (Continued)
+---
+id: features
+title: Feature Instructions
+content: Feature Instructions about this Mod
+---
+
+# Agent Instructions for Capture Them (Continued)
 
 ## Mod Overview and Purpose
 Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod designed to simplify the process of capturing downed enemy pawns. This mod integrates a new work type, "Capture", which alleviates the manual task of selecting pawns for capture and automates the process using a work queue system. It aims to enhance gameplay by streamlining the capture mechanic, allowing players to focus on other aspects of colony management.
@@ -54,4 +60,3 @@ This instruction file provides detailed guidance to developers and contributors 
 - Prefer minimal reads: read only the smallest code region needed (around the suspicious lines).
 - When mentioning SonarQube issues, automatically use the SonarQube MCP service to fetch and address issues instead of making inferred fixes without querying SonarQube first.
 - When mentioning the rimworld log, automatically use the Rimworld MCP service to fetch the log.
-

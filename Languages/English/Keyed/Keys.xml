@@ -3,4 +3,8 @@
   <DesignatorCapturePawn>Capture downed pawn</DesignatorCapturePawn>
   <DesignatorCapturePawnDesc>Capture chosen pawn to make him a prisoner. Your colonists assigned to this work will automatically bring pawn to prisoners bed. Works same as right clicking to capture.</DesignatorCapturePawnDesc>
   <MessageMustDesignateDownedForeignPawn>Pawns must be downed and not be of your faction.</MessageMustDesignateDownedForeignPawn>
+  <CaptureThem_ModName>Capture Them</CaptureThem_ModName>
+  <CaptureThem_AutoCaptureAfterRaid_Label>Automatically capture downed enemy pawns after raid</CaptureThem_AutoCaptureAfterRaid_Label>
+  <CaptureThem_AutoCaptureAfterRaid_Desc>When an enemy raid on your colony ends, automatically designates eligible downed hostile pawns for capture.</CaptureThem_AutoCaptureAfterRaid_Desc>
+  <CaptureThem_AutoCapturedEnemiesMessage>Automatically designated {0} downed enemies for capture after raid.</CaptureThem_AutoCapturedEnemiesMessage>
 </LanguageData>

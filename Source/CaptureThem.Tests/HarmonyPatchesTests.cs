@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RimWorld;
 using Verse;
+using Verse.AI.Group;
 
 namespace CaptureThem.Tests;
 
@@ -74,5 +75,48 @@ public class HarmonyPatchesTests
         ReverseDesignatorDatabase_InitDesignators.Postfix(ref db);
 
         Assert.IsTrue(db.AllDesignators.Any(d => d is Designator_CapturePawn));
+    }
+
+    [TestMethod]
+    public void LordToil_PanicFlee_Init_NotifiesAutoCaptureService()
+    {
+        var mockAutoCapture = new Mock<IAutoCaptureService>();
+        CaptureThemServices.AutoCaptureService = mockAutoCapture.Object;
+
+        var toil = (LordToil_PanicFlee)RuntimeHelpers.GetUninitializedObject(typeof(LordToil_PanicFlee));
+        var lord = (Lord)RuntimeHelpers.GetUninitializedObject(typeof(Lord));
+        typeof(LordToil).GetField("lord", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+            ?.SetValue(toil, lord);
+
+        LordToil_PanicFlee_Init.Postfix(toil);
+
+        mockAutoCapture.Verify(a => a.NotifyRaidFleeing(lord), Times.Once);
+    }
+
+    [TestMethod]
+    public void Lord_Notify_PawnDowned_NotifiesAutoCaptureService()
+    {
+        var mockAutoCapture = new Mock<IAutoCaptureService>();
+        CaptureThemServices.AutoCaptureService = mockAutoCapture.Object;
+
+        var lord = (Lord)RuntimeHelpers.GetUninitializedObject(typeof(Lord));
+        var pawn = new Pawn();
+
+        Lord_Notify_PawnDowned.Postfix(lord, pawn);
+
+        mockAutoCapture.Verify(a => a.NotifyRaidPawnDowned(lord, pawn), Times.Once);
+    }
+
+    [TestMethod]
+    public void Lord_Destroy_NotifiesAutoCaptureService()
+    {
+        var mockAutoCapture = new Mock<IAutoCaptureService>();
+        CaptureThemServices.AutoCaptureService = mockAutoCapture.Object;
+
+        var lord = (Lord)RuntimeHelpers.GetUninitializedObject(typeof(Lord));
+
+        Lord_Destroy.Postfix(lord);
+
+        mockAutoCapture.Verify(a => a.NotifyRaidLordDestroyed(lord), Times.Once);
     }
 }

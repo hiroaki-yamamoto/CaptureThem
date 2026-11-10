@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <DesignatorCapturePawn>ダウンしたポーンを捕獲</DesignatorCapturePawn>
+  <DesignatorCapturePawnDesc>指定したポーンを囚人として捕獲します。この作業が割り当てられた入植者は自動的に対象を囚人ベッドへ運びます（右クリックでの捕獲と同様の動作です）。</DesignatorCapturePawnDesc>
+  <MessageMustDesignateDownedForeignPawn>ポーンはダウンしており、自勢力以外である必要があります。</MessageMustDesignateDownedForeignPawn>
+  <CaptureThem_ModName>Capture Them</CaptureThem_ModName>
+  <CaptureThem_AutoCaptureAfterRaid_Label>敵対勢力による襲撃終了後、ダウンした敵を自動捕獲</CaptureThem_AutoCaptureAfterRaid_Label>
+  <CaptureThem_AutoCaptureAfterRaid_Desc>敵対勢力によるコロニーへの襲撃終了後、ダウンしている敵性ポーンを自動的に捕獲対象に指定します。</CaptureThem_AutoCaptureAfterRaid_Desc>
+  <CaptureThem_AutoCapturedEnemiesMessage>襲撃終了に伴い、ダウンしている敵性ポーン{0}人を捕獲対象に指定しました。</CaptureThem_AutoCapturedEnemiesMessage>
+</LanguageData>

@@ -6,4 +6,8 @@
   <DesignatorCapturePawnDesc>抓住选定的卒子，使他成为俘虏。你的殖民者被分配到这项工作将会自动把卒子带到囚犯床上。工作原理与右击捕获相同。</DesignatorCapturePawnDesc>
   <!-- EN: Pawns must be downed and not be of your faction. -->
   <MessageMustDesignateDownedForeignPawn>卒子必须被打倒，而且不是你的阵营。</MessageMustDesignateDownedForeignPawn>
+  <CaptureThem_ModName>Capture Them</CaptureThem_ModName>
+  <CaptureThem_AutoCaptureAfterRaid_Label>敌对袭击结束后自动捕获倒地的敌人</CaptureThem_AutoCaptureAfterRaid_Label>
+  <CaptureThem_AutoCaptureAfterRaid_Desc>敌对派系对殖民地的袭击结束后，自动将倒地的敌对小人指定为捕获目标。</CaptureThem_AutoCaptureAfterRaid_Desc>
+  <CaptureThem_AutoCapturedEnemiesMessage>袭击结束后已自动将 {0} 名倒地的敌人指定为捕获目标。</CaptureThem_AutoCapturedEnemiesMessage>
 </LanguageData>

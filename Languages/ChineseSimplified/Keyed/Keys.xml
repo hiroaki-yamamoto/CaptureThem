@@ -4,4 +4,8 @@
   <DesignatorCapturePawn>捕捉落单的小兵</DesignatorCapturePawn>
   <DesignatorCapturePawnDesc>捕获选中的小卒，使其成为囚犯。负责这项工作的殖民者会自动将小卒带到囚犯床上。操作方法与右键捕获相同。</DesignatorCapturePawnDesc>
   <MessageMustDesignateDownedForeignPawn>必须击倒不属于自己派系的棋子。</MessageMustDesignateDownedForeignPawn>
+  <CaptureThem_ModName>Capture Them</CaptureThem_ModName>
+  <CaptureThem_AutoCaptureAfterRaid_Label>敌对袭击结束后自动捕获倒地的敌人</CaptureThem_AutoCaptureAfterRaid_Label>
+  <CaptureThem_AutoCaptureAfterRaid_Desc>敌对派系对殖民地的袭击结束后，自动将倒地的敌对小人指定为捕获目标。</CaptureThem_AutoCaptureAfterRaid_Desc>
+  <CaptureThem_AutoCapturedEnemiesMessage>袭击结束后已自动将 {0} 名倒地的敌人指定为捕获目标。</CaptureThem_AutoCapturedEnemiesMessage>
 </LanguageData>

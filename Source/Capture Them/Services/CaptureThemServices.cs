@@ -14,6 +14,8 @@ public static class CaptureThemServices
     private static IPrisonerBedAssignmentService? bedAssignmentService;
     private static ICaptureNotificationService? notificationService;
     private static ICaptureJobFactory? jobFactory;
+    private static ICaptureSettingsService? settingsService;
+    private static IAutoCaptureService? autoCaptureService;
 
     /// <summary>
     /// Gets or sets the designation service instance.
@@ -70,6 +72,24 @@ public static class CaptureThemServices
     }
 
     /// <summary>
+    /// Gets or sets the capture settings service instance.
+    /// </summary>
+    public static ICaptureSettingsService SettingsService
+    {
+        get => settingsService ??= new CaptureSettingsService();
+        set => settingsService = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the automated capture service instance.
+    /// </summary>
+    public static IAutoCaptureService AutoCaptureService
+    {
+        get => autoCaptureService ??= new AutoCaptureService(SettingsService, EligibilityService, DesignationService);
+        set => autoCaptureService = value;
+    }
+
+    /// <summary>
     /// Resets all service instances to their default implementations.
     /// Particularly useful in test teardown routines.
     /// </summary>
@@ -81,5 +101,7 @@ public static class CaptureThemServices
         bedAssignmentService = null;
         notificationService = null;
         jobFactory = null;
+        settingsService = null;
+        autoCaptureService = null;
     }
 }

@@ -4,4 +4,8 @@
   <DesignatorCapturePawn>Niedergeschlagenen Bauern schlagen</DesignatorCapturePawn>
   <DesignatorCapturePawnDesc>Nimm den gewählten Bauern gefangen, um ihn zum Gefangenen zu machen. Ihre Kolonisten, die mit dieser Aufgabe betraut sind, bringen den Bauern automatisch ins Gefangenenbett. Funktioniert genauso wie Rechtsklick zum Einfangen.</DesignatorCapturePawnDesc>
   <MessageMustDesignateDownedForeignPawn>Die Bauern müssen niedergeschlagen werden und dürfen nicht zur eigenen Fraktion gehören.</MessageMustDesignateDownedForeignPawn>
+  <CaptureThem_ModName>Capture Them</CaptureThem_ModName>
+  <CaptureThem_AutoCaptureAfterRaid_Label>Niedergeschlagene Feinde nach Überfall automatisch gefangen nehmen</CaptureThem_AutoCaptureAfterRaid_Label>
+  <CaptureThem_AutoCaptureAfterRaid_Desc>Wenn ein feindlicher Überfall auf deine Kolonie endet, werden geeignete niedergeschlagene feindliche Kolonisten automatisch zur Gefangennahme markiert.</CaptureThem_AutoCaptureAfterRaid_Desc>
+  <CaptureThem_AutoCapturedEnemiesMessage>{0} niedergeschlagene Feinde wurden nach dem Überfall automatisch zur Gefangennahme markiert.</CaptureThem_AutoCapturedEnemiesMessage>
 </LanguageData>

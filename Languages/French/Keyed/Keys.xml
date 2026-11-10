@@ -4,4 +4,8 @@
   <DesignatorCapturePawn>Capture du pion abattu</DesignatorCapturePawn>
   <DesignatorCapturePawnDesc>Capturez le pion choisi pour le faire prisonnier. Vos colons affectés à ce travail amèneront automatiquement le pion au lit des prisonniers. Fonctionne de la même manière qu'un clic droit pour capturer.</DesignatorCapturePawnDesc>
   <MessageMustDesignateDownedForeignPawn>Les pions doivent être abattus et ne pas appartenir à votre faction.</MessageMustDesignateDownedForeignPawn>
+  <CaptureThem_ModName>Capture Them</CaptureThem_ModName>
+  <CaptureThem_AutoCaptureAfterRaid_Label>Capturer automatiquement les ennemis à terre après un raid</CaptureThem_AutoCaptureAfterRaid_Label>
+  <CaptureThem_AutoCaptureAfterRaid_Desc>Lorsqu'un raid ennemi sur votre colonie se termine, désigne automatiquement les ennemis à terre éligibles pour la capture.</CaptureThem_AutoCaptureAfterRaid_Desc>
+  <CaptureThem_AutoCapturedEnemiesMessage>{0} ennemis à terre ont été automatiquement désignés pour capture suite au raid.</CaptureThem_AutoCapturedEnemiesMessage>
 </LanguageData>

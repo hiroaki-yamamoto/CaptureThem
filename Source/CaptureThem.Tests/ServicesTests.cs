@@ -29,6 +29,8 @@ public class ServicesTests
         Assert.IsNotNull(CaptureThemServices.BedAssignmentService);
         Assert.IsNotNull(CaptureThemServices.NotificationService);
         Assert.IsNotNull(CaptureThemServices.JobFactory);
+        Assert.IsNotNull(CaptureThemServices.SettingsService);
+        Assert.IsNotNull(CaptureThemServices.AutoCaptureService);
     }
 
     [TestMethod]
@@ -40,6 +42,8 @@ public class ServicesTests
         var mockBed = new Mock<IPrisonerBedAssignmentService>();
         var mockNotification = new Mock<ICaptureNotificationService>();
         var mockJob = new Mock<ICaptureJobFactory>();
+        var mockSettings = new Mock<ICaptureSettingsService>();
+        var mockAutoCapture = new Mock<IAutoCaptureService>();
 
         CaptureThemServices.DesignationService = mockDesignation.Object;
         CaptureThemServices.EligibilityService = mockEligibility.Object;
@@ -47,6 +51,8 @@ public class ServicesTests
         CaptureThemServices.BedAssignmentService = mockBed.Object;
         CaptureThemServices.NotificationService = mockNotification.Object;
         CaptureThemServices.JobFactory = mockJob.Object;
+        CaptureThemServices.SettingsService = mockSettings.Object;
+        CaptureThemServices.AutoCaptureService = mockAutoCapture.Object;
 
         Assert.AreSame(mockDesignation.Object, CaptureThemServices.DesignationService);
         Assert.AreSame(mockEligibility.Object, CaptureThemServices.EligibilityService);
@@ -54,6 +60,8 @@ public class ServicesTests
         Assert.AreSame(mockBed.Object, CaptureThemServices.BedAssignmentService);
         Assert.AreSame(mockNotification.Object, CaptureThemServices.NotificationService);
         Assert.AreSame(mockJob.Object, CaptureThemServices.JobFactory);
+        Assert.AreSame(mockSettings.Object, CaptureThemServices.SettingsService);
+        Assert.AreSame(mockAutoCapture.Object, CaptureThemServices.AutoCaptureService);
 
         CaptureThemServices.ResetToDefaults();
 
@@ -63,5 +71,7 @@ public class ServicesTests
         Assert.AreNotSame(mockBed.Object, CaptureThemServices.BedAssignmentService);
         Assert.AreNotSame(mockNotification.Object, CaptureThemServices.NotificationService);
         Assert.AreNotSame(mockJob.Object, CaptureThemServices.JobFactory);
+        Assert.AreNotSame(mockSettings.Object, CaptureThemServices.SettingsService);
+        Assert.AreNotSame(mockAutoCapture.Object, CaptureThemServices.AutoCaptureService);
     }
 }

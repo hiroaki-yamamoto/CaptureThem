@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\1.7\Assemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\1.7\Assemblies\0Harmony.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -35,5 +35,8 @@
       <HintPath>..\..\..\..\UnityStubs.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <None Include="..\..\..\..\Assembly-CSharp.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\UnityStubs.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\..\..\workshop\content\294100\2009463077\1.7\Assemblies\0Harmony.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

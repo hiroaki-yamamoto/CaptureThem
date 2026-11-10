@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using CaptureThem.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -36,19 +36,4 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\..\..\Assembly-CSharp.dll" Link="Assembly-CSharp.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </None>
-    <None Include="..\..\..\..\UnityStubs.dll" Link="UnityStubs.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </None>
-    <None Include="..\..\..\..\..\..\workshop\content\294100\2009463077\1.7\Assemblies\0Harmony.dll" Link="0Harmony.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </None>
-  </ItemGroup>
 </Project>

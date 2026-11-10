@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CaptureThem.Interfaces;
-using RimWorld;
 using Verse;
 
 namespace CaptureThem.Services;

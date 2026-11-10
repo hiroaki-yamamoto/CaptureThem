@@ -5,9 +5,6 @@
   </Configurations>
   <Project Path="Capture Them/CaptureThem.csproj" />
   <Project Path="CaptureThem.Tests/CaptureThem.Tests.csproj" />
-  <Folder Name="/.github/">
-    <File Path="../.github/copilot-instructions.md" />
-  </Folder>
   <Folder Name="/XML/Patches/">
     <File Path="../Patches/DesignationCategories.xml" />
     <File Path="../Patches/ReturnToBedPatch.xml" />
@@ -16,7 +13,7 @@
     <File Path="../Patches/Misc. Robots++/RPP_Races.xml" />
   </Folder>
   <Folder Name="/XML/About/">
-    <File Path="../About/about.xml" />
+    <File Path="../About/About.xml" />
   </Folder>
   <Folder Name="/XML/Languages/English/Keyed/">
     <File Path="../Languages/English/Keyed/Keys.xml" />

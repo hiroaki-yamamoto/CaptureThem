@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using CaptureThem.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

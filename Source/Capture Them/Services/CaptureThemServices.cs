@@ -1,4 +1,3 @@
-using System;
 using CaptureThem.Interfaces;
 
 namespace CaptureThem.Services;

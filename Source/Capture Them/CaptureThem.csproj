@@ -4,9 +4,13 @@
     <TargetFramework>net10.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <DebugType>None</DebugType>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <LangVersion>latest</LangVersion>
   <FileVersion>1.7.0</FileVersion><GenerateDependencyFile>false</GenerateDependencyFile><AssemblyVersion>1.7</AssemblyVersion><Product>Capture Them (Continued)</Product><Copyright>© busted_bunny 2026 - MIT License</Copyright><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="CaptureThem.Tests" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
       <Version>1.7.4985-unstable</Version>
@@ -18,4 +22,4 @@
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
-<Target Name="KillRimWorld" BeforeTargets="Clean;Build"><Exec Command="taskkill.exe /F /IM RimWorld.exe /T &gt;nul 2&gt;&amp;1" IgnoreExitCode="true" /></Target></Project>
+<Target Name="KillRimWorld" BeforeTargets="Clean;Build" Condition="'$(BuildingInsideVisualStudio)' == 'true'"><Exec Command="taskkill.exe /F /IM RimWorld.exe /T &gt;nul 2&gt;&amp;1" IgnoreExitCode="true" ContinueOnError="true" /></Target></Project>

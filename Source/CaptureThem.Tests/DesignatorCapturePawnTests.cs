@@ -1,7 +1,9 @@
 using System;
+using System.Reflection;
 using CaptureThem.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using RimWorld;
 using Verse;
 
 namespace CaptureThem.Tests;
@@ -46,6 +48,21 @@ public class DesignatorCapturePawnTests
     }
 
     [TestMethod]
+    public void DesignateThing_WarnsAndDesignates_WhenTargetIsPawn()
+    {
+        var designator = new Designator_CapturePawn(
+            mockDesignationService.Object,
+            mockEligibilityService.Object,
+            mockNotificationService.Object);
+
+        var pawn = new Pawn();
+        designator.DesignateThing(pawn);
+
+        mockNotificationService.Verify(n => n.WarnIfCapturingWillAngerFaction(pawn), Times.Once);
+        mockDesignationService.Verify(d => d.Designate(pawn, It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
     public void CanDesignateThing_DelegatesToEligibilityService()
     {
         var designator = new Designator_CapturePawn(
@@ -60,5 +77,50 @@ public class DesignatorCapturePawnTests
 
         Assert.IsFalse(report.Accepted);
         mockEligibilityService.Verify(e => e.CanDesignateThing(thing, It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void CanDesignateCell_DelegatesToEligibilityService()
+    {
+        var designator = new Designator_CapturePawn(
+            mockDesignationService.Object,
+            mockEligibilityService.Object,
+            mockNotificationService.Object);
+
+        var cell = new IntVec3(5, 0, 5);
+        mockEligibilityService.Setup(e => e.CanDesignateCell(cell, It.IsAny<Map>())).Returns(false);
+
+        var report = designator.CanDesignateCell(cell);
+
+        Assert.IsFalse(report.Accepted);
+        mockEligibilityService.Verify(e => e.CanDesignateCell(cell, It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void Designation_ReturnsDesignationDefFromService()
+    {
+        var def = new DesignationDef { defName = "TestCaptureDef" };
+        mockDesignationService.SetupGet(d => d.DesignationDef).Returns(def);
+
+        var designator = new Designator_CapturePawn(
+            mockDesignationService.Object,
+            mockEligibilityService.Object,
+            mockNotificationService.Object);
+
+        var prop = typeof(Designator_CapturePawn).GetProperty("Designation", BindingFlags.Instance | BindingFlags.NonPublic);
+        var result = prop?.GetValue(designator);
+
+        Assert.AreSame(def, result);
+    }
+
+    [TestMethod]
+    public void DrawStyleCategory_ReturnsOrders()
+    {
+        var designator = new Designator_CapturePawn(
+            mockDesignationService.Object,
+            mockEligibilityService.Object,
+            mockNotificationService.Object);
+
+        Assert.AreEqual(DrawStyleCategoryDefOf.Orders, designator.DrawStyleCategory);
     }
 }

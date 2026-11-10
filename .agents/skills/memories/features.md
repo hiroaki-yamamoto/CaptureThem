@@ -27,7 +27,7 @@ Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod de
   - **Liskov Substitution Principle (LSP):** `Designator_CapturePawn` and `WorkGiver_CapturePrisoners` faithfully respect the contracts of base RimWorld classes (`Designator` and `WorkGiver_RescueDowned`).
   - **Interface Segregation Principle (ISP):** Clients depend only on the specific interfaces they require rather than a monolithic manager.
   - **Dependency Inversion Principle (DIP):** UI tools, WorkGivers, and Harmony patches depend on abstractions (`Interfaces/`), resolved through `CaptureThemServices` service locator which enables dependency injection and unit testing.
-- **Unit Testing:** Comprehensive test suite in `Source/CaptureThem.Tests` covering services, mock interactions, and boundary cases.
+- **Unit Testing:** Comprehensive test suite in `Source/CaptureThem.Tests` covering services, Harmony patches, mock interactions, and boundary cases. Configured as a standard MSTest test project fully discoverable and runnable from Visual Studio Test Explorer and `dotnet test`.
 
 ## XML Integration
 - **DesignationCategories.xml**: Defines the categories under which new designations appear.

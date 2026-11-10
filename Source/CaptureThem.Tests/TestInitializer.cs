@@ -67,10 +67,15 @@ public class TestInitializer
             {
                 customSaveDataPathField.SetValue(null, Path.GetTempPath());
             }
+
+            if (CaptureThemDefOf.CaptureThemCapture == null)
+            {
+                CaptureThemDefOf.CaptureThemCapture = new Verse.DesignationDef { defName = "CaptureThemCapture" };
+            }
         }
         catch
         {
-            // Ignore if path setup fails
+            // Ignore if path or def setup fails
         }
     }
 }

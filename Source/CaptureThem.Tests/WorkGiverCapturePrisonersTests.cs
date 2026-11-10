@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using CaptureThem.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -62,6 +64,32 @@ public class WorkGiverCapturePrisonersTests
     }
 
     [TestMethod]
+    public void ShouldSkip_ReturnsTrue_WhenAnySpawnedDesignationIsFalse()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        mockDesignationService.Setup(d => d.AnySpawnedDesignation(It.IsAny<Map>())).Returns(false);
+
+        var result = sut.ShouldSkip(pawn, false);
+
+        Assert.IsTrue(result);
+        mockDesignationService.Verify(d => d.AnySpawnedDesignation(It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void ShouldSkip_ReturnsFalse_WhenAnySpawnedDesignationIsTrue()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        mockDesignationService.Setup(d => d.AnySpawnedDesignation(It.IsAny<Map>())).Returns(true);
+
+        var result = sut.ShouldSkip(pawn, false);
+
+        Assert.IsFalse(result);
+        mockDesignationService.Verify(d => d.AnySpawnedDesignation(It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
     public void HasJobOnThing_ReturnsFalse_WhenTargetIsNotEligible()
     {
         var sut = CreateSut();
@@ -75,6 +103,73 @@ public class WorkGiverCapturePrisonersTests
     }
 
     [TestMethod]
+    public void HasJobOnThing_ReturnsFalse_WhenDangerNear()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        var victim = new Pawn();
+        mockEligibilityService.Setup(e => e.IsEligibleForCaptureWork(pawn, victim, false)).Returns(true);
+        mockThreatAssessmentService.Setup(t => t.IsDangerNear(pawn, victim, 40f)).Returns(true);
+
+        var result = sut.HasJobOnThing(pawn, victim, false);
+
+        Assert.IsFalse(result);
+        mockBedAssignmentService.Verify(b => b.FindBedFor(It.IsAny<Pawn>(), It.IsAny<Pawn>(), It.IsAny<bool>()), Times.Never);
+    }
+
+    [TestMethod]
+    public void HasJobOnThing_ReturnsFalse_AndNotifies_WhenNoBedAvailable()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        var victim = new Pawn();
+        mockEligibilityService.Setup(e => e.IsEligibleForCaptureWork(pawn, victim, false)).Returns(true);
+        mockThreatAssessmentService.Setup(t => t.IsDangerNear(pawn, victim, 40f)).Returns(false);
+        mockBedAssignmentService.Setup(b => b.FindBedFor(victim, pawn, true)).Returns((Building_Bed?)null);
+
+        var result = sut.HasJobOnThing(pawn, victim, false);
+
+        Assert.IsFalse(result);
+        mockNotificationService.Verify(n => n.NotifyNoPrisonerBedAvailable(victim), Times.Once);
+    }
+
+    [TestMethod]
+    public void HasJobOnThing_ReturnsTrue_WhenBedFoundAndCanReserve()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        var victim = new Pawn();
+        var bed = (Building_Bed)RuntimeHelpers.GetUninitializedObject(typeof(Building_Bed));
+        mockEligibilityService.Setup(e => e.IsEligibleForCaptureWork(pawn, victim, false)).Returns(true);
+        mockThreatAssessmentService.Setup(t => t.IsDangerNear(pawn, victim, 40f)).Returns(false);
+        mockBedAssignmentService.Setup(b => b.FindBedFor(victim, pawn, true)).Returns(bed);
+        mockBedAssignmentService.Setup(b => b.CanReserveBed(pawn, bed, false)).Returns(true);
+
+        var result = sut.HasJobOnThing(pawn, victim, false);
+
+        Assert.IsTrue(result);
+        mockNotificationService.Verify(n => n.NotifyNoPrisonerBedAvailable(It.IsAny<Pawn>()), Times.Never);
+    }
+
+    [TestMethod]
+    public void HasJobOnThing_ReturnsFalse_WhenBedFoundButCannotReserve()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        var victim = new Pawn();
+        var bed = (Building_Bed)RuntimeHelpers.GetUninitializedObject(typeof(Building_Bed));
+        mockEligibilityService.Setup(e => e.IsEligibleForCaptureWork(pawn, victim, false)).Returns(true);
+        mockThreatAssessmentService.Setup(t => t.IsDangerNear(pawn, victim, 40f)).Returns(false);
+        mockBedAssignmentService.Setup(b => b.FindBedFor(victim, pawn, true)).Returns(bed);
+        mockBedAssignmentService.Setup(b => b.CanReserveBed(pawn, bed, false)).Returns(false);
+
+        var result = sut.HasJobOnThing(pawn, victim, false);
+
+        Assert.IsFalse(result);
+        mockNotificationService.Verify(n => n.NotifyNoPrisonerBedAvailable(It.IsAny<Pawn>()), Times.Never);
+    }
+
+    [TestMethod]
     public void JobOnThing_ReturnsNull_WhenTargetIsNotPawn()
     {
         var sut = CreateSut();
@@ -82,6 +177,25 @@ public class WorkGiverCapturePrisonersTests
         var result = sut.JobOnThing(null!, null!, false);
 
         Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public void JobOnThing_CreatesCaptureJob_WhenTargetIsPawn()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        var victim = new Pawn();
+        var bed = (Building_Bed)RuntimeHelpers.GetUninitializedObject(typeof(Building_Bed));
+        var expectedJob = new Job();
+
+        mockBedAssignmentService.Setup(b => b.FindBedFor(victim, pawn, false)).Returns(bed);
+        mockJobFactory.Setup(j => j.CreateCaptureJob(pawn, victim, bed)).Returns(expectedJob);
+
+        var result = sut.JobOnThing(pawn, victim, false);
+
+        Assert.AreSame(expectedJob, result);
+        mockBedAssignmentService.Verify(b => b.FindBedFor(victim, pawn, false), Times.Once);
+        mockJobFactory.Verify(j => j.CreateCaptureJob(pawn, victim, bed), Times.Once);
     }
 
     [TestMethod]
@@ -93,8 +207,6 @@ public class WorkGiverCapturePrisonersTests
             .Setup(d => d.GetDesignatedThings(It.IsAny<Map>()))
             .Returns(expectedThings);
 
-        // Pawn with null map will pass null to GetDesignatedThings
-        // We verify the call is forwarded without throwing
         var pawn = new Pawn();
         var result = sut.PotentialWorkThingsGlobal(pawn);
 

@@ -66,7 +66,17 @@ public class WorkGiver_CapturePrisoners : WorkGiver_RescueDowned
     /// <inheritdoc />
     public override bool ShouldSkip(Pawn pawn, bool forced = false)
     {
-        return !designationService.AnySpawnedDesignation(pawn.Map);
+        if (!designationService.AnySpawnedDesignation(pawn.Map))
+        {
+            return true;
+        }
+
+        if (!forced && !bedAssignmentService.HasKnownAvailableBed(pawn.Map))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /// <inheritdoc />

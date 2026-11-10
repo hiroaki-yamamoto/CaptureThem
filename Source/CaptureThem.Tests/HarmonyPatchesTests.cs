@@ -41,13 +41,16 @@ public class HarmonyPatchesTests
     public void Pawn_GuestTracker_SetGuestStatus_DoesNotRemoveDesignation_WhenGuestStatusIsNotPrisoner()
     {
         var mockDesignation = new Mock<ICaptureDesignationService>();
+        var mockBedAssignment = new Mock<IPrisonerBedAssignmentService>();
         CaptureThemServices.DesignationService = mockDesignation.Object;
+        CaptureThemServices.BedAssignmentService = mockBedAssignment.Object;
         var pawn = new Pawn();
 
         Pawn_GuestTracker_SetGuestStatus.Postfix(pawn, GuestStatus.Slave);
         Pawn_GuestTracker_SetGuestStatus.Postfix(pawn, GuestStatus.Guest);
 
         mockDesignation.Verify(d => d.TryRemoveDesignation(It.IsAny<Thing>(), It.IsAny<Map>()), Times.Never);
+        mockBedAssignment.Verify(b => b.InvalidateBedCache(It.IsAny<Map>()), Times.Exactly(2));
     }
 
     [TestMethod]

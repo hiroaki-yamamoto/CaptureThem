@@ -77,16 +77,48 @@ public class WorkGiverCapturePrisonersTests
     }
 
     [TestMethod]
-    public void ShouldSkip_ReturnsFalse_WhenAnySpawnedDesignationIsTrue()
+    public void ShouldSkip_ReturnsFalse_WhenAnySpawnedDesignationIsTrue_AndBedKnownAvailable()
     {
         var sut = CreateSut();
         var pawn = new Pawn();
         mockDesignationService.Setup(d => d.AnySpawnedDesignation(It.IsAny<Map>())).Returns(true);
+        mockBedAssignmentService.Setup(b => b.HasKnownAvailableBed(It.IsAny<Map>())).Returns(true);
 
         var result = sut.ShouldSkip(pawn, false);
 
         Assert.IsFalse(result);
         mockDesignationService.Verify(d => d.AnySpawnedDesignation(It.IsAny<Map>()), Times.Once);
+        mockBedAssignmentService.Verify(b => b.HasKnownAvailableBed(It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void ShouldSkip_ReturnsTrue_WhenAnySpawnedDesignationIsTrue_ButBedKnownUnavailable_AndNotForced()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        mockDesignationService.Setup(d => d.AnySpawnedDesignation(It.IsAny<Map>())).Returns(true);
+        mockBedAssignmentService.Setup(b => b.HasKnownAvailableBed(It.IsAny<Map>())).Returns(false);
+
+        var result = sut.ShouldSkip(pawn, false);
+
+        Assert.IsTrue(result);
+        mockDesignationService.Verify(d => d.AnySpawnedDesignation(It.IsAny<Map>()), Times.Once);
+        mockBedAssignmentService.Verify(b => b.HasKnownAvailableBed(It.IsAny<Map>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void ShouldSkip_ReturnsFalse_WhenBedKnownUnavailable_ButForced()
+    {
+        var sut = CreateSut();
+        var pawn = new Pawn();
+        mockDesignationService.Setup(d => d.AnySpawnedDesignation(It.IsAny<Map>())).Returns(true);
+        mockBedAssignmentService.Setup(b => b.HasKnownAvailableBed(It.IsAny<Map>())).Returns(false);
+
+        var result = sut.ShouldSkip(pawn, true);
+
+        Assert.IsFalse(result);
+        mockDesignationService.Verify(d => d.AnySpawnedDesignation(It.IsAny<Map>()), Times.Once);
+        mockBedAssignmentService.Verify(b => b.HasKnownAvailableBed(It.IsAny<Map>()), Times.Never);
     }
 
     [TestMethod]

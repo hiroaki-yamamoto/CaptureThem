@@ -26,4 +26,19 @@ public interface IPrisonerBedAssignmentService
     /// <param name="forced">Whether the action is forced by the player.</param>
     /// <returns><c>true</c> if the bed is reservable; otherwise, <c>false</c>.</returns>
     bool CanReserveBed(Pawn capturer, Building_Bed bed, bool forced);
+
+    /// <summary>
+    /// Checks whether prisoner beds are considered potentially available on the given map.
+    /// Returns <c>false</c> if a recent search found no valid beds and the throttle period has not elapsed.
+    /// </summary>
+    /// <param name="map">The map to evaluate, or <c>null</c>.</param>
+    /// <returns><c>true</c> if bed searches should proceed; <c>false</c> if known to be full/unavailable.</returns>
+    bool HasKnownAvailableBed(Map? map);
+
+    /// <summary>
+    /// Invalidates any negative bed availability cache for the specified map (or all maps).
+    /// Called when a bed becomes available, constructed, or when a prisoner leaves.
+    /// </summary>
+    /// <param name="map">The target map, or <c>null</c> to invalidate all maps.</param>
+    void InvalidateBedCache(Map? map = null);
 }

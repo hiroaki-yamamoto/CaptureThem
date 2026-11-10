@@ -13,6 +13,7 @@ Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod de
 - **New Work Type:** Introduces a "Capture" work type that falls between "Bed Rest" and "Basic" in the work priority menu.
 - **Automation Tool:** Allows players to mark downed enemy pawns for capture using a new designation tool in the order menu.
 - **Tool Accessibility:** The designation tool is easily accessible when selecting any downed pawns not belonging to the player's faction.
+- **Bed Search Negative Cache & Throttling:** When prisoner beds are full or unavailable on a map, subsequent searches are throttled with a tick-based negative cache (default 250 ticks) to eliminate wasted AI search cycles while maintaining self-healing capability and instant cache invalidation upon prisoner departures.
 - **Compatibilities and Patches:**
   - Special patch compatibility with Misc. Robots++ integration.
   - Translations available in English and Simplified Chinese.
@@ -37,7 +38,7 @@ Capture Them (Continued) is an updated version of busted_bunny's RimWorld mod de
 ## Harmony Patching
 - Harmony is used to apply non-invasive method patches for integrating new behaviors into RimWorld without altering its original code base.
 - Patches include:
-  - **Pawn_GuestTracker_SetGuestStatus.cs**: Postfix patch ensures captured pawns are properly assigned guest status.
+  - **Pawn_GuestTracker_SetGuestStatus.cs**: Postfix patch ensures captured pawns are properly assigned guest status, and invalidates prisoner bed negative cache when pawns transition away from prisoner status.
   - **Pawn_HealthTracker_MakeUndowned.cs**: Prefix patch handles events when pawns regain consciousness.
   - **ReverseDesignatorDatabase_InitDesignators.cs**: Postfix patch adds the capture designator tool to the game's UI.
 

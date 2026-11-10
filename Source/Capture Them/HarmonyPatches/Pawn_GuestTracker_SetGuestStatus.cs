@@ -20,11 +20,15 @@ public static class Pawn_GuestTracker_SetGuestStatus
     /// <param name="guestStatus">The new guest status applied to the pawn.</param>
     public static void Postfix(Pawn ___pawn, GuestStatus guestStatus)
     {
-        if (guestStatus != GuestStatus.Prisoner)
+        if (guestStatus == GuestStatus.Prisoner)
         {
-            return;
+            CaptureThemServices.DesignationService.TryRemoveDesignation(___pawn);
         }
-
-        CaptureThemServices.DesignationService.TryRemoveDesignation(___pawn);
+        else
+        {
+            // When a pawn transitions away from prisoner status (e.g. released, recruited, or transferred),
+            // a prisoner bed may have become available. Invalidate negative bed cache immediately.
+            CaptureThemServices.BedAssignmentService.InvalidateBedCache(___pawn?.Map ?? ___pawn?.MapHeld);
+        }
     }
 }

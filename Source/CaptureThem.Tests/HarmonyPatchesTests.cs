@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using CaptureThem.HarmonyPatches;
 using CaptureThem.Interfaces;
 using CaptureThem.Services;
+using HarmonyLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RimWorld;
@@ -118,5 +119,65 @@ public class HarmonyPatchesTests
         Lord_Destroy.Postfix(lord);
 
         mockAutoCapture.Verify(a => a.NotifyRaidLordDestroyed(lord), Times.Once);
+    }
+
+    [TestMethod]
+    public void AllHarmonyPatches_HaveValidTargetMethodsAndParameterBindings()
+    {
+        var assembly = typeof(StartUp).Assembly;
+        var patchTypes = assembly.GetTypes()
+            .Where(t => t.GetCustomAttributes(typeof(HarmonyPatch), inherit: false).Length > 0)
+            .ToList();
+
+        Assert.IsTrue(patchTypes.Count > 0, "Expected at least one HarmonyPatch class in assembly.");
+
+        foreach (var patchType in patchTypes)
+        {
+            var patchAttrs = patchType.GetCustomAttributes<HarmonyPatch>(inherit: false).ToList();
+            var targetType = patchAttrs.Select(a => a.info.declaringType).FirstOrDefault(t => t != null);
+            var targetMethodName = patchAttrs.Select(a => a.info.methodName).FirstOrDefault(m => !string.IsNullOrEmpty(m));
+
+            Assert.IsNotNull(targetType, $"Patch {patchType.Name} is missing declaringType.");
+            Assert.IsNotNull(targetMethodName, $"Patch {patchType.Name} is missing methodName.");
+
+            var targetMethod = targetType.GetMethod(
+                targetMethodName,
+                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+            Assert.IsNotNull(targetMethod, $"Target method {targetType.FullName}.{targetMethodName} was not found for patch {patchType.Name}.");
+
+            var targetParams = targetMethod.GetParameters();
+            var patchMethods = patchType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(m => m.Name is "Prefix" or "Postfix" or "Transpiler" or "Finalizer");
+
+            foreach (var patchMethod in patchMethods)
+            {
+                foreach (var param in patchMethod.GetParameters())
+                {
+                    var paramName = param.Name!;
+                    if (paramName is "__instance" or "__result" or "__state" or "__exception" or "__originalMethod" or "__runOriginal")
+                    {
+                        continue;
+                    }
+
+                    if (paramName.StartsWith("___", StringComparison.Ordinal))
+                    {
+                        var fieldName = paramName.Substring(3);
+                        var field = targetType.GetField(
+                            fieldName,
+                            BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                        Assert.IsNotNull(
+                            field,
+                            $"Field '{fieldName}' (injected via '{paramName}') was not found on {targetType.FullName} in patch {patchType.Name}.{patchMethod.Name}.");
+                        continue;
+                    }
+
+                    var matchingTargetParam = targetParams.FirstOrDefault(p => p.Name == paramName);
+                    Assert.IsNotNull(
+                        matchingTargetParam,
+                        $"Parameter '{paramName}' in {patchType.Name}.{patchMethod.Name} does not match any parameter on {targetType.FullName}.{targetMethodName}({string.Join(", ", targetParams.Select(p => $"{p.ParameterType.Name} {p.Name}"))}).");
+                }
+            }
+        }
     }
 }

@@ -18,12 +18,12 @@ public static class Lord_Notify_PawnDowned
     /// Postfix patch executed after a pawn belonging to the lord has been downed.
     /// </summary>
     /// <param name="__instance">The <see cref="Lord"/> instance.</param>
-    /// <param name="p">The pawn that was downed.</param>
-    public static void Postfix(Lord __instance, Pawn p)
+    /// <param name="pawn">The pawn that was downed.</param>
+    public static void Postfix(Lord __instance, Pawn pawn)
     {
         if (__instance != null)
         {
-            CaptureThemServices.AutoCaptureService.NotifyRaidPawnDowned(__instance, p);
+            CaptureThemServices.AutoCaptureService.NotifyRaidPawnDowned(__instance, pawn);
         }
     }
 }
